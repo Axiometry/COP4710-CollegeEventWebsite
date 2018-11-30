@@ -1,0 +1,60 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Default path will just redirect to the computer list
+GET     /                           controllers.HomeController.index
+
+#GET     /login                      controllers.HomeController.login
+
+#GET     /events/upcoming            controllers.HomeController.upcomingEvents
+#GET     /events/past                controllers.HomeController.pastEvents
+#GET     /events/mine                controllers.HomeController.ownEvents
+
+#POST    /events/create              controllers.HomeController.createEvent
+
+GET     /user/login                 controllers.HomeController.login
+POST    /user/login                 controllers.HomeController.performLogin
+GET     /user/logout                controllers.HomeController.logout
+GET     /user/register              controllers.HomeController.register
+POST    /user/register              controllers.HomeController.performRegistration
+GET     /user/profile               controllers.HomeController.userProfile
+POST    /user/profile               controllers.HomeController.updateUserProfile
+
+GET     /events/id/:id              controllers.HomeController.event(id: Long)
+POST    /events/id/:id/comments     controllers.HomeController.createComment(id: Long)
+POST    /events/comments/:id        controllers.HomeController.editComment(id: Long)
+POST    /events/comments/:id/delete controllers.HomeController.deleteComment(id: Long)
+POST    /events/create              controllers.HomeController.createEvent
+
+GET     /events/user/calendar       controllers.HomeController.myEventsCalendar
+GET     /events/user/map            controllers.HomeController.myEventsMap
+
+GET     /events/all/calendar        controllers.HomeController.allEventsCalendar
+GET     /events/all/map             controllers.HomeController.allEventsMap
+
+GET     /clubs                      controllers.HomeController.clubs
+POST    /clubs                      controllers.HomeController.createRso
+POST    /clubs/:id/join             controllers.HomeController.joinRso(id: Long)
+POST    /clubs/:id/leave            controllers.HomeController.leaveRso(id: Long)
+POST    /clubs/:id/edit             controllers.HomeController.editRso(id: Long)
+POST    /clubs/:id/delete           controllers.HomeController.deleteRso(id: Long)
+
+# Computers list (look at the default values for pagination parameters)
+#GET     /computers                  controllers.HomeController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
+
+# Add computer
+#GET     /computers/new              controllers.HomeController.create
+#POST    /computers                  controllers.HomeController.save
+
+# Edit existing computer
+#GET     /computers/:id              controllers.HomeController.edit(id:Long)
+#POST    /computers/:id              controllers.HomeController.update(id:Long)
+
+# Delete a computer
+#POST    /computers/:id/delete       controllers.HomeController.delete(id:Long)
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+->      /webjars                    webjars.Routes

@@ -1,0 +1,210 @@
+@import controllers.HomeController.SidebarSelection
+@(selection: SidebarSelection)(implicit request: HomeController.UserRequest)
+
+
+@user = @{ request.identity }
+
+@selectedUserProfile = @{selection == SidebarSelection.UserProfile}
+@selectedUser = @{ selectedUserProfile }
+
+@selectedMyEventsList = @{selection == SidebarSelection.MyEventsList}
+@selectedMyEventsCalendar = @{selection == SidebarSelection.MyEventsCalendar}
+@selectedMyEventsMap = @{selection == SidebarSelection.MyEventsMap}
+@selectedMyEvents = @{selectedMyEventsList || selectedMyEventsCalendar || selectedMyEventsMap}
+
+@selectedAllEventsList = @{selection == SidebarSelection.AllEventsList}
+@selectedAllEventsCalendar = @{selection == SidebarSelection.AllEventsCalendar}
+@selectedAllEventsMap = @{selection == SidebarSelection.AllEventsMap}
+@selectedAllEvents = @{selectedAllEventsList || selectedAllEventsCalendar || selectedAllEventsMap}
+
+@selectedClubs = @{selection == SidebarSelection.Clubs}
+
+
+
+<div class="sidebar" data-color="blue">
+    <!--
+        Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow"
+    -->
+  <style>
+    .logo .logo-mini i {
+      width: 34px;
+      line-height: 30px;
+      margin-right: 12px;
+      text-align: center;
+      font-size: 20px;
+      float: left;
+      position: relative;
+    }
+    .sidebar .logo a.logo-mini, .off-canvas-sidebar .logo a.logo-mini {
+      margin-left: 12px;
+    }
+    .sidebar-mini-icon {
+      margin-left: 10px !important;
+    }
+    .sidebar-mini-icon i {
+      font-size: 12px !important;
+    }
+    #sidebarMainNav {
+      padding-bottom: 20px;
+    }
+    .sidebar-separator {
+      content: '';
+      position: absolute;
+      right: 15px;
+      height: 1px;
+      width: calc(100% - 30px);
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+  </style>
+  <div class="logo">
+    <a href="@routes.HomeController.index" class="simple-text logo-mini">
+      <i class="now-ui-icons ui-1_calendar-60"></i>
+    </a>
+    <a href="@routes.HomeController.index" class="simple-text logo-normal">
+      Home
+    </a>
+    <div class="navbar-minimize">
+      <button id="minimizeSidebar" class="btn btn-simple btn-icon btn-neutral btn-round">
+        <i class="now-ui-icons text_align-center visible-on-sidebar-regular"></i>
+        <i class="now-ui-icons design_bullet-list-67 visible-on-sidebar-mini"></i>
+      </button>
+    </div>
+  </div>
+  <div class="sidebar-wrapper">
+    <!-- USER -->
+    <div class="user">
+      <div class="photo">
+        <img src="@routes.Assets.at("theme/assets/img/default-avatar.png")" />
+      </div>
+      <div class="info">
+        <a data-toggle="collapse" href="#collapseExample" class="@if(!selectedUser){ collapsed }" aria-expanded="@if(selectedUser){ true }else{ false }">
+          <span style="text-transform: capitalize;">
+            @user.username
+            <b class="caret"></b>
+          </span>
+        </a>
+        <div class="clearfix"></div>
+        <div class="collapse @if(selectedUser){ show }" id="collapseExample">
+          <ul class="nav">
+            <li class="@if(selectedUserProfile){ active }">
+              <a href="@routes.HomeController.userProfile">
+                <span class="sidebar-mini-icon"><i class="now-ui-icons business_badge"></i></span>
+                <span class="sidebar-normal">My Profile</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+      <!-- NAV LIST -->
+    <ul id="sidebarMainNav" class="nav">
+      <!-- MY EVENTS -->
+      <li class="@if(selectedMyEvents){ active }">
+        <a data-toggle="collapse" href="#sidebarMyEvents" aria-expanded="@if(selectedMyEvents){ true }else{ false }">
+          <i class="now-ui-icons ui-1_calendar-60"></i>
+          <p>
+            My Events
+            <b class="caret"></b>
+          </p>
+        </a>
+        <div class="collapse @if(selectedMyEvents){ show }" id="sidebarMyEvents">
+          <ul class="nav">
+            <!--
+            <li class="@if(selectedMyEventsList){ active }">
+              <a href="@routes.Assets.at("theme/examples/pages/pricing.html")">
+                <span class="sidebar-mini-icon"><i class="now-ui-icons design_bullet-list-67"></i></span>
+                <span class="sidebar-normal"> List </span>
+              </a>
+            </li>
+            -->
+            <li class="@if(selectedMyEventsCalendar){ active }">
+              <a href="@routes.HomeController.myEventsCalendar">
+                <span class="sidebar-mini-icon"><i class="now-ui-icons ui-1_calendar-60"></i></span>
+                <span class="sidebar-normal"> Calendar </span>
+              </a>
+            </li>
+            <li class="@if(selectedMyEventsMap){ active }">
+              <a href="@routes.HomeController.myEventsMap">
+                <span class="sidebar-mini-icon"><i class="now-ui-icons location_compass-05"></i></span>
+                <span class="sidebar-normal"> Map </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+        <!-- ALL EVENTS -->
+      <li class="@if(selectedAllEvents){ active }">
+        <a data-toggle="collapse" href="#sidebarAllEvents" aria-expanded="@if(selectedAllEvents){ true }else{ false }">
+          <i class="now-ui-icons objects_planet"></i>
+          <p>
+            Discover
+            <b class="caret"></b>
+          </p>
+        </a>
+        <div class="collapse @if(selectedAllEvents){ show }" id="sidebarAllEvents">
+          <ul class="nav">
+            <!--
+            <li class="@if(selectedAllEventsList){ active }">
+              <a href="@routes.Assets.at("theme/examples/pages/pricing.html")">
+                <span class="sidebar-mini-icon"><i class="now-ui-icons design_bullet-list-67"></i></span>
+                <span class="sidebar-normal"> List </span>
+              </a>
+            </li>
+            -->
+            <li class="@if(selectedAllEventsCalendar){ active }">
+              <a href="@routes.HomeController.allEventsCalendar">
+                <span class="sidebar-mini-icon"><i class="now-ui-icons ui-1_calendar-60"></i></span>
+                <span class="sidebar-normal"> Calendar </span>
+              </a>
+            </li>
+            <li class="@if(selectedAllEventsMap){ active }">
+              <a href="@routes.HomeController.allEventsMap">
+                <span class="sidebar-mini-icon"><i class="now-ui-icons location_compass-05"></i></span>
+                <span class="sidebar-normal"> Map </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+        <!-- CLUBS -->
+      <li class="@if(selectedClubs){ active }">
+        <a href="@routes.HomeController.clubs">
+          <i class="now-ui-icons sport_trophy"></i>
+          <p>Clubs</p>
+        </a>
+      </li>
+    </ul>
+
+    @if(user.role == Role.SuperAdmin) {
+      <div class="sidebar-separator"></div>
+
+        <!-- ADMIN NAV LIST -->
+      <ul id="sidebarAdminNav" class="nav">
+        <li>
+          <a href="@routes.Assets.at("theme/examples/dashboard.html")">
+            <i class="now-ui-icons ui-1_calendar-60"></i>
+            <p>Edit Events</p>
+          </a>
+        </li>
+        <li>
+          <a href="@routes.Assets.at("theme/examples/dashboard.html")">
+            <i class="now-ui-icons sport_trophy"></i>
+            <p>Edit Clubs</p>
+          </a>
+        </li>
+        <li>
+          <a href="@routes.Assets.at("theme/examples/dashboard.html")">
+            <i class="now-ui-icons travel_istanbul"></i>
+            <p>Edit Universities</p>
+          </a>
+        </li>
+        <li>
+          <a href="@routes.Assets.at("theme/examples/dashboard.html")">
+            <i class="now-ui-icons users_single-02"></i>
+            <p>Edit Users</p>
+          </a>
+        </li>
+      </ul>
+    }
+  </div>
+</div>

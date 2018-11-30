@@ -1,0 +1,202 @@
+@(sidebarSelection: HomeController.SidebarSelection, eventForm: HomeController.EventForm, ownedRsoList: Seq[Rso], conflictingEventError: Option[Event])(_styles: Html)(_scripts: Html)(_body: Html)(implicit request: HomeController.UserRequest)
+
+
+@user = @{ request.identity }
+
+@createInputTextHtml(label: String)(id: String, name: String, value: Option[String], args: Map[Symbol, Any]) = {
+  <div class="form-group">
+    <input class="form-control" type="text" placeholder="@label" name="@name" id="@id" @toHtmlArgs(args)>
+  </div>
+}
+@createInputText(label: String) = @{ createInputTextHtml(label) _ }
+
+
+@styles = {
+  <style>
+    #events-page .nav-pills .nav-item .nav-link {
+      background-color: rgba(200, 200, 200, 1.0);
+    }
+    #events-page .nav-pills .nav-item .nav-link:hover {
+      background-color: rgba(200, 200, 200, 1.0);
+    }
+    #events-page .nav-pills.nav-pills-info .nav-item .nav-link.active {
+      background-color: #2CA8FF;
+    }
+    #events-page .nav-pills.nav-pills-info .nav-item .nav-link.active:hover {
+      background-color: #2DB5FF;
+    }
+  </style>
+
+  @_styles
+}
+@scripts = {
+  <script>
+    function initDateTimePicker() {
+      if ($(".datetimepicker").length != 0) {
+        $('.datetimepicker').datetimepicker({
+          icons: {
+            time: "now-ui-icons tech_watch-time",
+            date: "now-ui-icons ui-1_calendar-60",
+            up: "fa fa-chevron-up",
+            down: "fa fa-chevron-down",
+            previous: 'now-ui-icons arrows-1_minimal-left',
+            next: 'now-ui-icons arrows-1_minimal-right',
+            today: 'fa fa-screenshot',
+            clear: 'fa fa-trash',
+            close: 'fa fa-remove'
+          },
+          format: "YYYY-MM-DDTHH:mm:ss"
+        });
+      }
+
+      if ($(".datepicker").length != 0) {
+        $('.datepicker').datetimepicker({
+          format: 'MM/DD/YYYY',
+          icons: {
+            time: "now-ui-icons tech_watch-time",
+            date: "now-ui-icons ui-1_calendar-60",
+            up: "fa fa-chevron-up",
+            down: "fa fa-chevron-down",
+            previous: 'now-ui-icons arrows-1_minimal-left',
+            next: 'now-ui-icons arrows-1_minimal-right',
+            today: 'fa fa-screenshot',
+            clear: 'fa fa-trash',
+            close: 'fa fa-remove'
+          }
+        });
+      }
+
+      if ($(".timepicker").length != 0) {
+        $('.timepicker').datetimepicker({
+          //          format: 'H:mm',    // use this format if you want the 24hours timepicker
+          format: 'h:mm A', //use this format if you want the 12hours timpiecker with AM/PM toggle
+          icons: {
+            time: "now-ui-icons tech_watch-time",
+            date: "now-ui-icons ui-1_calendar-60",
+            up: "fa fa-chevron-up",
+            down: "fa fa-chevron-down",
+            previous: 'now-ui-icons arrows-1_minimal-left',
+            next: 'now-ui-icons arrows-1_minimal-right',
+            today: 'fa fa-screenshot',
+            clear: 'fa fa-trash',
+            close: 'fa fa-remove'
+          }
+        });
+      }
+    }
+    function showCreateEventAlert(start) {
+      swal({
+        title: 'Create an Event',
+        html: `
+          @helper.form(action = helper.CSRF(routes.HomeController.createEvent), args = 'id -> "createEventForm") {
+            <div class="form-group">
+              <select class="form-control" name="rso_id">
+                @for(rso <- ownedRsoList){
+                  <option value="@rso.id">@rso.name </option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Name" name="name">
+            </div>
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Description" name="description">
+            </div>
+            <div class="form-group">
+              <input class="form-control datetimepicker" type="text" name="date_time">
+            </div>
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Location Name" name="location_name">
+            </div>
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Location Coords" name="location_coords">
+            </div>
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Contact Phone" name="contact_phone">
+            </div>
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Contact Email" name="contact_email">
+            </div>
+            <div class="form-group">
+              <select class="form-control" name="visibility" id="visibility">
+                <option>Public</option>
+                <option>Private</option>
+                <option>RSO</option>
+              </select>
+            </div>
+          }`,
+        showCancelButton: true,
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: false,
+        onOpen: function() { initDateTimePicker(); }
+      }).then(function(result) {
+        $("#createEventForm").submit();
+        console.log("Submitted!!!");
+      });
+    }
+    $(document).ready(function() {
+      demo.initDateTimePicker();
+    });
+  </script>
+
+  @conflictingEventError.map { event =>
+    <script>
+      $(document).ready(function() {
+        swal({
+          type: 'error',
+          title: 'Conflicting Event',
+          html: `
+            The event you tried to create conflicted with the following event: <br/>
+            Name: @event.name <br/>
+            Location: @event.locationName <br/>
+            Time: @event.dateTime
+          `
+        })
+      })
+    </script>
+  }
+
+  @_scripts
+}
+
+@body = {
+    <!--
+        <div class="panel-header">
+          <div class="header text-center">
+            <h1 class="title">Events</h1>
+          </div>
+        </div>
+        -->
+  <div class="panel-header panel-header-sm">
+  </div>
+  <div id="events-page" class="content">
+    <div class="row">
+      <div class="col-md-10 ml-auto">
+        <div class="card ">
+          <div class="card-body ">
+            @_body
+          </div>
+        </div>
+      </div>
+      <div class="col-md-1 mr-auto">
+        <ul class="nav nav-pills nav-pills-info nav-pills-icons flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="#filter">
+              <i class="now-ui-icons ui-1_zoom-bold"></i> Filter
+            </a>
+          </li>
+          @if(user.role == Role.Admin || user.role == Role.SuperAdmin) {
+            <li class="nav-item">
+              <a class="nav-link active" href="#create" onclick="showCreateEventAlert()">
+                <i class="now-ui-icons ui-1_simple-add"></i> Create
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+}
+
+@Page("Events", sidebarSelection)(styles)(scripts)(body)

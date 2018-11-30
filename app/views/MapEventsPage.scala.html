@@ -1,0 +1,48 @@
+@(sidebarSelection: HomeController.SidebarSelection, events: Seq[Event], eventForm: HomeController.EventForm, ownedRsoList: Seq[Rso], conflictingEventError: Option[Event])(implicit request: HomeController.UserRequest)
+
+
+@styles = {
+
+}
+@scripts = {
+  <script>
+    function initMap() {
+      var myLatlng = new google.maps.LatLng(40.748817, -73.985428);
+      var mapOptions = {
+        zoom: 8,
+        center: myLatlng,
+        scrollwheel: false, //we disable de scroll over the map, it is a really annoing when you scroll through page
+      };
+
+      var map = new google.maps.Map(document.getElementById("regularMap"), mapOptions);
+
+      @for(event <- events) {
+        @if(!event.locationCoords.isEmpty) {
+          (function() {
+            var contentString = '<div id="content"><h1 id="firstHeading" class="firstHeading"><a href="@routes.HomeController.event(event.id)"> @{ event.name } </a></h1><div id="bodyContent"> @{event.description} </div></div>';
+            var marker = new google.maps.Marker({
+              position: new google.maps.LatLng( @event.locationCoords.split(",")(0), @event.locationCoords.split(",")(1) ),
+              map: map,
+              title: '@event.name'
+            });
+            var infowindow = new google.maps.InfoWindow({
+              content: contentString
+            });
+            marker.addListener('click', function () {
+              infowindow.open(map, marker);
+            });
+            console.log("added marker for event @event.name ");
+          })();
+        }
+      }
+    }
+    $(document).ready(function () {
+      initMap();
+    });
+  </script>
+}
+@body = {
+  <div id="regularMap" class="map" style="height: 100vh;"></div>
+}
+
+@EventsPage(sidebarSelection, eventForm, ownedRsoList, conflictingEventError)(styles)(scripts)(body)

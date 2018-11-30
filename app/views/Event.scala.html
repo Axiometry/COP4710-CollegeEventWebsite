@@ -1,0 +1,175 @@
+@(sidebarSelection: HomeController.SidebarSelection, event: Event, comments: Seq[EventComment], commentForm: HomeController.CommentForm)(implicit request: HomeController.UserRequest)
+
+
+@user = @{ request.identity }
+
+@styles = {
+  <style>
+    .card-tasks .td-actions {
+      width: 77px;
+    }
+    .card-tasks tr {
+      height: 77px;
+    }
+  </style>
+}
+@scripts = {
+  <script>
+    var token = "@helper.CSRF.getToken.value";
+    $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+      jqXHR.setRequestHeader('Csrf-Token', token);
+    });
+
+
+
+    function showCreateCommentAlert() {
+      swal({
+        title: 'Comment',
+        html: `
+          @helper.form(action = helper.CSRF(routes.HomeController.createComment(event.id)), args = 'id -> "createCommentForm") {
+            <div class="form-group">
+              <input class="form-control" type="hidden" placeholder="Rating" name="rating" value="5">
+            </div>
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Comment" name="body">
+            </div>
+          }`,
+        showCancelButton: true,
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: false,
+        onOpen: function() { initDateTimePicker(); }
+      }).then(function(result) {
+        $("#createCommentForm").submit();
+      }).catch(swal.noop);
+    }
+
+    function showEditCommentAlert(commentId, html) {
+      swal({
+        title: 'Edit Comment',
+        html: html,
+        showCancelButton: true,
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: false,
+        onOpen: function() { initDateTimePicker(); }
+      }).then(function(result) {
+        $("#editClubForm").submit();
+      }).catch(swal.noop);
+    }
+
+    function showDeleteCommentAlert(commentId, deleteUrl) {
+      swal({
+        title: 'Delete Comment?',
+        type: 'warning',
+        confirmButtonClass: 'btn btn-info',
+        buttonsStyling: false
+      }).then(function() {
+        $.ajax({
+          url: deleteUrl,
+          type: "POST",
+          success: function () {
+            swal({
+              type: 'success',
+              html: 'You have deleted your comment',
+              confirmButtonClass: 'btn btn-info',
+              buttonsStyling: false
+            }).then(function() { location.reload(); }, function() { location.reload(); }).catch(swal.noop);
+          },
+          error: function (err) {
+            console.log(err);
+            swal({
+              type: 'error',
+              title: 'Error',
+              text: err,
+              confirmButtonClass: "btn btn-info",
+              buttonsStyling: false
+            }).catch(swal.noop);
+          }
+        });
+      }).catch(swal.noop);
+    }
+
+
+  </script>
+}
+
+@body = {
+  <script>
+    var commentEditFunctions = {};
+    var commentDeleteFunctions = {};
+    var rsoJoinFunctions = {};
+  </script>
+  <div class="panel-header panel-header-sm">
+  </div>
+  <div id="clubs-page" class="content">
+    <div class="row">
+      <div class="col-md-10 ml-auto">
+
+        <div class="card  card-tasks text-center">
+          <div class="card-header ">
+            <h4 class="card-title">Event: @event.name</h4>
+          </div>
+          <div class="card-body ">
+            <div class="table-full-width table-responsive">
+              <table class="table">
+                <tbody>
+                  @for(comment <- comments) {
+                    <script>
+                      commentEditFunctions["@comment.id"] = function() {
+                        var body = `
+                          @helper.form(action = helper.CSRF(routes.HomeController.editComment(comment.id)), args = 'id -> "editClubForm") {
+                            <div class="form-group">
+                              <input class="form-control" type="hidden" placeholder="Rating" name="rating" value="5">
+                            </div>
+                            <div class="form-group">
+                              <input class="form-control" type="text" placeholder="Comment" name="body" value="@comment.body">
+                            </div>
+                          }
+                        `;
+                        showEditCommentAlert("@comment.id", body);
+                      };
+                      commentDeleteFunctions["@comment.id"] = function() {
+                        showDeleteCommentAlert("@comment.id", "@routes.HomeController.deleteComment(comment.id)");
+                      };
+                    </script>
+                    <tr>
+                      <td class="img-row">
+                        <div class="img-wrapper img-raised">
+                          <img src="@routes.Assets.at("theme/assets/img/default-avatar.png")" class="img-raised" />
+                        </div>
+                      </td>
+                      <td class="text-left">@comment.user.username <br/> <p class="text-muted">@comment.body</p></td>
+                      <td class="td-actions text-right">
+                        @if(user.id == comment.user.id || user.role == Role.SuperAdmin) {
+                          <button type="button" rel="tooltip" title="" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task" href="#" onclick="commentEditFunctions['@comment.id']();">
+                            <i class="now-ui-icons ui-2_settings-90"></i>
+                          </button>
+                          <button type="button" rel="tooltip" title="" class="btn btn-danger btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Remove" href="#" onclick="commentDeleteFunctions['@comment.id']();">
+                            <i class="now-ui-icons ui-1_simple-remove"></i>
+                          </button>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-1 mr-auto">
+        <ul class="nav nav-pills nav-pills-info nav-pills-icons flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="#" onclick="showCreateCommentAlert()">
+              <i class="now-ui-icons ui-2_chat-round"></i> Comment
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+}
+
+@Page("Event", sidebarSelection)(styles)(scripts)(body)

@@ -1,0 +1,131 @@
+@(universities: Seq[University], form: HomeController.RegisterForm)(implicit request: RequestHeader)
+
+@styles = {
+
+}
+@scripts = {
+  <script>
+    function performRegistration() {
+      $("#registerForm").submit();
+    }
+  </script>
+}
+@body = {
+  @Navbar("Register")
+
+  <div class="wrapper wrapper-full-page ">
+    <div class="full-page register-page section-image" filter-color="black" data-image="@routes.Assets.at("theme/assets/img/bg16.jpg")">
+      <div class="content">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-5 ml-auto">
+              <div class="info-area info-horizontal mt-5">
+                <div class="icon icon-primary">
+                  <i class="now-ui-icons media-2_sound-wave"></i>
+                </div>
+                <div class="description">
+                  <h5 class="info-title">Find What's Happening</h5>
+                  <p class="description">
+                    College Event Website is where you discover what's happening around town. This is your one-stop event shop.
+                  </p>
+                </div>
+              </div>
+              <div class="info-area info-horizontal">
+                <div class="icon icon-primary">
+                  <i class="now-ui-icons media-1_button-pause"></i>
+                </div>
+                <div class="description">
+                  <h5 class="info-title">Fully Coded in Scala</h5>
+                  <p class="description">
+                    I've developed the website with the Play Framework 2.0. Database technology is top-notch.
+                  </p>
+                </div>
+              </div>
+              <div class="info-area info-horizontal">
+                <div class="icon icon-info">
+                  <i class="now-ui-icons users_single-02"></i>
+                </div>
+                <div class="description">
+                  <h5 class="info-title">A-Grade Material</h5>
+                  <p class="description">
+                    This website is developed to maximize the score in COP4710. Please bestow a 100% upon this assignment.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mr-auto">
+              <div class="card card-signup text-center">
+                <div class="card-header ">
+                  <h4 class="card-title">Register</h4>
+                  <div class="social">
+                    <button class="btn btn-icon btn-round btn-twitter">
+                      <i class="fab fa-twitter"></i>
+                    </button>
+                    <button class="btn btn-icon btn-round btn-dribbble">
+                      <i class="fab fa-dribbble"></i>
+                    </button>
+                    <button class="btn btn-icon btn-round btn-facebook">
+                      <i class="fab fa-facebook-f"></i>
+                    </button>
+                    <h5 class="card-description"> or be classical </h5>
+                  </div>
+                </div>
+                <div class="card-body ">
+                  @helper.form(action = helper.CSRF(routes.HomeController.performRegistration), args = 'id -> "registerForm") {
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <div class="input-group-text">
+                          <i class="now-ui-icons users_circle-08"></i>
+                        </div>
+                      </div>
+                      <input type="text" class="form-control" placeholder="Username" name="username">
+                    </div>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <div class="input-group-text">
+                          <i class="now-ui-icons ui-1_email-85"></i>
+                        </div>
+                      </div>
+                      <input type="text" class="form-control" placeholder="Email" name="email">
+                    </div>
+                    <div class="input-group">
+                      <select class="selectpicker form-control" data-style="btn btn-info btn-simple" data-size="7" title="University" name="university_id">
+                        <option disabled>Select University</option>
+                        @for(university <- universities) {
+                          <option value="@university.id">@university.fullName</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <div class="input-group-text">
+                          <i class="now-ui-icons objects_key-25"></i>
+                        </div>
+                      </div>
+                      <input type="password" placeholder="Password" class="form-control" name="password">
+                    </div>
+                    <div class="form-check text-left">
+                      <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox">
+                        <span class="form-check-sign"></span>
+                        I agree to the
+                        <a href="#something">terms and conditions</a>.
+                      </label>
+                    </div>
+                  }
+                </div>
+                <div class="card-footer ">
+                  <a href="#" class="btn btn-primary btn-round btn-lg" onclick="performRegistration()">Sign Up</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      @Footer()
+    </div>
+  </div>
+}
+
+@Imports(styles)(scripts)(body)

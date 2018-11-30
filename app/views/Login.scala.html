@@ -1,0 +1,71 @@
+@(form: HomeController.LoginForm)(implicit request: RequestHeader)
+
+@styles = {
+
+}
+@scripts = {
+  <script>
+    function performLogin() {
+        $("#loginForm").submit();
+    }
+  </script>
+}
+@body = {
+@Navbar("Sign In")
+
+  <div class="wrapper wrapper-full-page ">
+    <div class="full-page login-page section-image" filter-color="black" data-image="@routes.Assets.at("theme/assets/img/bg14.jpg")">
+        <!--   you can change the color of the filter page using: data-color="blue | purple | green | orange | red | rose " -->
+      <div class="content">
+        <div class="container">
+          <div class="col-md-4 ml-auto mr-auto">
+            @helper.form(action = helper.CSRF(routes.HomeController.performLogin), args = 'id -> "loginForm") {
+              <div class="card card-login card-plain">
+                <div class="card-header ">
+                  <div class="logo-container">
+                    <img src="@routes.Assets.at("theme/assets/img/now-logo.png")" alt="">
+                  </div>
+                </div>
+                <div class="card-body ">
+                  <div class="input-group no-border form-control-lg">
+                    <span class="input-group-prepend">
+                      <div class="input-group-text">
+                        <i class="now-ui-icons users_circle-08"></i>
+                      </div>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Username" name="username">
+                  </div>
+                  <div class="input-group no-border form-control-lg">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text">
+                        <i class="now-ui-icons objects_key-25"></i>
+                      </div>
+                    </div>
+                    <input type="password" placeholder="Password" class="form-control" name="password">
+                  </div>
+                </div>
+                <div class="card-footer ">
+                  <a href="#" class="btn btn-primary btn-round btn-lg btn-block mb-3" onclick="performLogin()">Sign In</a>
+                  <div class="pull-left">
+                    <h6>
+                      <a href="@routes.HomeController.register" class="link footer-link">Create Account</a>
+                    </h6>
+                  </div>
+                  <div class="pull-right">
+                    <h6>
+                      <a href="#toobad" class="link footer-link">Need Help?</a>
+                    </h6>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      @Footer()
+    </div>
+  </div>
+}
+
+@Imports(styles)(scripts)(body)

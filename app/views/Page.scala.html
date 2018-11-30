@@ -1,0 +1,25 @@
+@(title: String, sidebarSelection: HomeController.SidebarSelection)(_styles: Html)(_scripts: Html)(_body: Html)(implicit request: HomeController.UserRequest)
+
+@styles = {
+  <title>@title</title>
+
+  @_styles
+}
+@scripts = {
+  @_scripts
+}
+@body = {
+  <div class="wrapper ">
+    @Sidebar(sidebarSelection)
+
+    <div class="main-panel">
+      @Navbar(title)
+
+      @_body
+
+      @Footer()
+    </div>
+  </div>
+}
+
+@Imports(styles)(scripts)(body)
